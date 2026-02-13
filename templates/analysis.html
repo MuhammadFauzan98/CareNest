@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Health Analysis - Smart Health Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        <!-- Risk Level Card -->
+        <div class="card mb-4">
+            <div class="card-header text-white 
+                {% if risk_level == 'high' %}bg-danger
+                {% elif risk_level == 'medium' %}bg-warning
+                {% else %}bg-success{% endif %}">
+                <h4 class="mb-0">
+                    <i class="fas fa-robot me-2"></i>AI Health Analysis Results
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="display-1 
+                            {% if risk_level == 'high' %}text-danger
+                            {% elif risk_level == 'medium' %}text-warning
+                            {% else %}text-success{% endif %}">
+                            {% if risk_level == 'high' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% elif risk_level == 'medium' %}
+                                <i class="fas fa-exclamation-circle"></i>
+                            {% else %}
+                                <i class="fas fa-check-circle"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h2 class="card-title 
+                            {% if risk_level == 'high' %}text-danger
+                            {% elif risk_level == 'medium' %}text-warning
+                            {% else %}text-success{% endif %}">
+                            {{ risk_level|upper }} RISK LEVEL
+                        </h2>
+                        <p class="lead">Confidence: {{ "%.1f"|format(confidence * 100) }}%</p>
+                        <p class="text-muted">Analysis completed on {{ now.strftime('%B %d, %Y at %H:%M') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Predicted Conditions -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-diagnoses me-2"></i>Predicted Conditions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for condition in predicted_conditions %}
+                            <div class="alert 
+                                {% if risk_level == 'high' %}alert-danger
+                                {% elif risk_level == 'medium' %}alert-warning
+                                {% else %}alert-success{% endif %} mb-2">
+                                <i class="fas fa-{% if risk_level == 'high' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                                {{ condition }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Parameters Summary -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>Health Parameters
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Blood Pressure:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if health_data.systolic_bp > 140 or health_data.diastolic_bp > 90 %}bg-danger
+                                            {% else %}bg-success{% endif %}">
+                                            {{ health_data.systolic_bp }}/{{ health_data.diastolic_bp }} mmHg
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Heart Rate:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if health_data.heart_rate > 100 or health_data.heart_rate < 60 %}bg-warning
+                                            {% else %}bg-success{% endif %}">
+                                            {{ health_data.heart_rate }} BPM
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Blood Sugar:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if health_data.blood_sugar > 180 %}bg-danger
+                                            {% elif health_data.blood_sugar > 140 %}bg-warning
+                                            {% else %}bg-success{% endif %}">
+                                            {{ health_data.blood_sugar }} mg/dL
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Cholesterol:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if health_data.cholesterol > 240 %}bg-danger
+                                            {% elif health_data.cholesterol > 200 %}bg-warning
+                                            {% else %}bg-success{% endif %}">
+                                            {{ health_data.cholesterol }} mg/dL
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Sleep:</th>
+                                    <td>
+                                        <span class="badge 
+                                            {% if health_data.sleep_hours < 6 %}bg-warning
+                                            {% else %}bg-success{% endif %}">
+                                            {{ health_data.sleep_hours }} hours
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-alt me-2"></i>Personalized Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for recommendation in recommendations %}
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle text-success mt-1 me-2"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                {{ recommendation }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <a href="{{ url_for('input_health') }}" class="btn btn-primary w-100">
+                    <i class="fas fa-plus me-2"></i>Add New Record
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                <a href="{{ url_for('history') }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-history me-2"></i>View History
+                </a>
+            </div>
+            <div class="col-md-4 mb-2">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Important Notice -->
+        {% if risk_level == 'high' %}
+        <div class="alert alert-danger mt-4">
+            <h5><i class="fas fa-exclamation-triangle me-2"></i>Important Notice</h5>
+            <p class="mb-0">
+                <strong>High risk detected!</strong> Please consult with a healthcare professional as soon as possible. 
+                This analysis is for informational purposes only and should not replace professional medical advice.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Remember:</strong> This AI analysis is based on the data you provided and is intended for 
+            educational and informational purposes only. Always consult with qualified healthcare providers 
+            for medical diagnosis and treatment.
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}User Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-user me-2 text-primary"></i>User Details: {{ user.username }}
+    </h1>
+    <a href="{{ url_for('admin') }}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Admin
+    </a>
+</div>
+
+<!-- User Information Card -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>User Information
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-sm">
+                    <tr>
+                        <th>User ID:</th>
+                        <td>{{ user.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Username:</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Age:</th>
+                        <td>{{ user.age }} years</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Gender:</th>
+                        <td>{{ user.gender|title }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role:</th>
+                        <td>
+                            {% if user.is_admin %}
+                                <span class="badge bg-danger">Administrator</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Regular User</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Registered:</th>
+                        <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Health Records:</th>
+                        <td>
+                            <span class="badge bg-primary">{{ user.health_records|length }}</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Health Records -->
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-clipboard-list me-2"></i>Recent Health Records
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if health_records %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Blood Pressure</th>
+                            <th>Heart Rate</th>
+                            <th>Blood Sugar</th>
+                            <th>Cholesterol</th>
+                            <th>Sleep</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in health_records %}
+                        <tr>
+                            <td>{{ record.recorded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if record.systolic_bp > 140 or record.diastolic_bp > 90 %}bg-danger
+                                    {% else %}bg-success{% endif %}">
+                                    {{ record.systolic_bp }}/{{ record.diastolic_bp }}
+                                </span>
+                            </td>
+                            <td>{{ record.heart_rate }}</td>
+                            <td>{{ record.blood_sugar }}</td>
+                            <td>{{ record.cholesterol }}</td>
+                            <td>{{ record.sleep_hours }}h</td>
+                            <td>
+                                {% if record.prediction %}
+                                    {% if record.prediction.risk_level == 'high' %}
+                                        <span class="badge bg-danger">High</span>
+                                    {% elif record.prediction.risk_level == 'medium' %}
+                                        <span class="badge bg-warning">Medium</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Low</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No health records found for this user.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- User Statistics -->
+{% if health_records %}
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>User Statistics
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h3 class="text-primary">{{ user.health_records|length }}</h3>
+                        <p class="mb-0">Total Records</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h3 class="text-success">
+                            {{ user.health_records|selectattr("prediction")|selectattr("prediction.risk_level", "equalto", "low")|list|length }}
+                        </h3>
+                        <p class="mb-0">Low Risk</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h3 class="text-warning">
+                            {{ user.health_records|selectattr("prediction")|selectattr("prediction.risk_level", "equalto", "medium")|list|length }}
+                        </h3>
+                        <p class="mb-0">Medium Risk</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h3 class="text-danger">
+                            {{ user.health_records|selectattr("prediction")|selectattr("prediction.risk_level", "equalto", "high")|list|length }}
+                        </h3>
+                        <p class="mb-0">High Risk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

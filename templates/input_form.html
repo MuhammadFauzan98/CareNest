@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Health Input - Smart Health Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Health Data Input Form</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('input_health') }}" id="healthForm">
+                    
+                    <!-- Vital Signs Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-heartbeat me-2"></i>Vital Signs
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label">Weight (kg) *</label>
+                            <input type="number" class="form-control" id="weight" name="weight" 
+                                   step="0.1" min="30" max="200" required>
+                            <div class="form-text">Enter your current weight in kilograms</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="height" class="form-label">Height (cm) *</label>
+                            <input type="number" class="form-control" id="height" name="height" 
+                                   step="0.1" min="100" max="250" required>
+                            <div class="form-text">Enter your height in centimeters</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="systolic_bp" class="form-label">Systolic Blood Pressure *</label>
+                            <input type="number" class="form-control" id="systolic_bp" name="systolic_bp" 
+                                   min="70" max="250" required>
+                            <div class="form-text">Upper number in BP reading</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="diastolic_bp" class="form-label">Diastolic Blood Pressure *</label>
+                            <input type="number" class="form-control" id="diastolic_bp" name="diastolic_bp" 
+                                   min="40" max="150" required>
+                            <div class="form-text">Lower number in BP reading</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="heart_rate" class="form-label">Heart Rate (BPM) *</label>
+                            <input type="number" class="form-control" id="heart_rate" name="heart_rate" 
+                                   min="30" max="200" required>
+                            <div class="form-text">Beats per minute</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="blood_sugar" class="form-label">Blood Sugar (mg/dL) *</label>
+                            <input type="number" class="form-control" id="blood_sugar" name="blood_sugar" 
+                                   step="0.1" min="50" max="500" required>
+                            <div class="form-text">Fasting blood sugar level</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="cholesterol" class="form-label">Cholesterol (mg/dL) *</label>
+                            <input type="number" class="form-control" id="cholesterol" name="cholesterol" 
+                                   step="0.1" min="100" max="400" required>
+                            <div class="form-text">Total cholesterol level</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="sleep_hours" class="form-label">Sleep Hours (Last Night) *</label>
+                            <input type="number" class="form-control" id="sleep_hours" name="sleep_hours" 
+                                   step="0.1" min="0" max="24" required>
+                            <div class="form-text">Hours of sleep you got last night</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Symptoms Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-stethoscope me-2"></i>Symptoms & Additional Info
+                            </h5>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="symptoms" class="form-label">Current Symptoms</label>
+                            <textarea class="form-control" id="symptoms" name="symptoms" 
+                                      rows="3" placeholder="Describe any symptoms you're experiencing..."></textarea>
+                            <div class="form-text">Separate multiple symptoms with commas</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="medication" class="form-label">Current Medications</label>
+                            <input type="text" class="form-control" id="medication" name="medication" 
+                                   placeholder="List your current medications">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="allergies" class="form-label">Allergies</label>
+                            <input type="text" class="form-control" id="allergies" name="allergies" 
+                                   placeholder="List any allergies">
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="exercise_frequency" class="form-label">Exercise Frequency</label>
+                            <select class="form-select" id="exercise_frequency" name="exercise_frequency">
+                                <option value="">Select frequency</option>
+                                <option value="daily">Daily</option>
+                                <option value="3-4_times_week">3-4 times per week</option>
+                                <option value="1-2_times_week">1-2 times per week</option>
+                                <option value="rarely">Rarely</option>
+                                <option value="never">Never</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Validation and Submission -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> All fields marked with * are required. 
+                                Your data will be analyzed by our AI system to provide health insights.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-undo me-2"></i>Reset Form
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-brain me-2"></i>Analyze Health Data
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Health Guidelines Card -->
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-book-medical me-2"></i>Health Guidelines Reference</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Blood Pressure (mmHg)</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="text-success">Normal:</span> Below 120/80</li>
+                            <li><span class="text-warning">Elevated:</span> 120-129/ Below 80</li>
+                            <li><span class="text-danger">High:</span> 130+/80+</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Heart Rate (BPM)</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="text-success">Normal (Adults):</span> 60-100</li>
+                            <li><span class="text-warning">Consult Doctor:</span> Below 60 or Above 100</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Blood Sugar (mg/dL)</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="text-success">Normal Fasting:</span> 70-99</li>
+                            <li><span class="text-warning">Prediabetes:</span> 100-125</li>
+                            <li><span class="text-danger">Diabetes:</span> 126+</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Cholesterol (mg/dL)</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="text-success">Desirable:</span> Below 200</li>
+                            <li><span class="text-warning">Borderline:</span> 200-239</li>
+                            <li><span class="text-danger">High:</span> 240+</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('healthForm');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('input[required], select[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+</script>
+{% endblock %}
