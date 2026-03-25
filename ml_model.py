@@ -11,6 +11,10 @@ class HealthRiskPredictor:
         self.model = None
         self.label_encoder = LabelEncoder()
         self.is_trained = False
+        self.feature_columns = [
+            'age', 'weight', 'systolic_bp', 'diastolic_bp',
+            'heart_rate', 'blood_sugar', 'cholesterol', 'sleep_hours'
+        ]
         
     def generate_sample_data(self):
         """Generate sample training data for demonstration"""
@@ -63,9 +67,7 @@ class HealthRiskPredictor:
             df = self.generate_sample_data()
             
             # Prepare features and target
-            features = ['age', 'weight', 'systolic_bp', 'diastolic_bp', 
-                       'heart_rate', 'blood_sugar', 'cholesterol', 'sleep_hours']
-            X = df[features]
+            X = df[self.feature_columns]
             y = self.label_encoder.fit_transform(df['risk_level'])
             
             # Split data
@@ -109,17 +111,17 @@ class HealthRiskPredictor:
             self.load_model()
         
         try:
-            # Prepare input features
-            features = np.array([[
-                health_data['age'],
-                health_data['weight'],
-                health_data['systolic_bp'],
-                health_data['diastolic_bp'],
-                health_data['heart_rate'],
-                health_data['blood_sugar'],
-                health_data['cholesterol'],
-                health_data['sleep_hours']
-            ]])
+            # Use a DataFrame with training feature names to avoid sklearn warnings.
+            features = pd.DataFrame([{
+                'age': health_data['age'],
+                'weight': health_data['weight'],
+                'systolic_bp': health_data['systolic_bp'],
+                'diastolic_bp': health_data['diastolic_bp'],
+                'heart_rate': health_data['heart_rate'],
+                'blood_sugar': health_data['blood_sugar'],
+                'cholesterol': health_data['cholesterol'],
+                'sleep_hours': health_data['sleep_hours']
+            }])[self.feature_columns]
             
             # Make prediction
             prediction = self.model.predict(features)[0]
